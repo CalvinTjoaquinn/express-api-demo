@@ -12,8 +12,11 @@ const taskRoutes = require("./routes/tasks");
 
 const app = express();
 
-// middleware
-app.use(helmet());
+// middleware (skip helmet for /docs route)
+app.use((req, res, next) => {
+  if (req.path === "/docs") return next();
+  helmet()(req, res, next);
+});
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
