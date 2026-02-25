@@ -39,11 +39,16 @@ app.use((req, res) => {
 // error handler
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 3000;
+// connect to db once (reused across serverless invocations)
+connectDB();
 
-connectDB().then(() => {
+// for local dev
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`Swagger docs: http://localhost:${PORT}/docs`);
   });
-});
+}
+
+module.exports = app;
