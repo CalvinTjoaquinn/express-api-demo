@@ -10,7 +10,11 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:3000",
+        url: "https://express-api-demo-gray.vercel.app",
+        description: "Production",
+      },
+      {
+        url: "http://localhost:3002",
         description: "Local",
       },
     ],
