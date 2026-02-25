@@ -3,7 +3,6 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
-const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./config/swagger");
 const connectDB = require("./config/db");
 const errorHandler = require("./middleware/errorHandler");
@@ -19,12 +18,23 @@ app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
 
-// swagger docs (disable helmet CSP for swagger static assets)
-app.use("/docs", (req, res, next) => {
-  res.removeHeader("Content-Security-Policy");
-  res.removeHeader("X-Content-Type-Options");
-  next();
-}, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// swagger JSON spec
+app.get("/api-docs.json", (req, res) => {
+  res.json(swaggerSpec);
+});
+
+// swagger UI via CDN (works on serverless)
+app.get("/docs", (req, res) => {
+  res.send(`<!DOCTYPE html>
+<html><head>
+<title>Express API Demo - Docs</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
+</head><body>
+<div id="swagger-ui"></div>
+<script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+<script>SwaggerUIBundle({ url: "/api-docs.json", dom_id: "#swagger-ui" });</script>
+</body></html>`);
+});
 
 // routes
 app.use("/api/auth", authRoutes);
