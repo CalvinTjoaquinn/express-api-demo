@@ -19,8 +19,12 @@ app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
 
-// swagger docs
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// swagger docs (disable helmet CSP for swagger static assets)
+app.use("/docs", (req, res, next) => {
+  res.removeHeader("Content-Security-Policy");
+  res.removeHeader("X-Content-Type-Options");
+  next();
+}, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // routes
 app.use("/api/auth", authRoutes);
